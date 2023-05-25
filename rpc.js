@@ -1,3 +1,6 @@
+let playerScore = 0;
+let computerScore = 0;
+
 function playRound(playerSelection, computerSelection) {
   playerSelection = playerSelection.toLowerCase();
 
@@ -20,42 +23,54 @@ function getComputerChoice() {
   return choices[randomIndex];
 }
 
-function game() {
-  let playerScore = 0;
-  let computerScore = 0;
+function updateScore() {
+  const scoreElement = document.getElementById("score");
+  scoreElement.textContent = `Player: ${playerScore} - Computer: ${computerScore}`;
+}
 
-  for (let i = 0; i < 5; i++) {
-    const playerSelection = prompt("Choose rock, paper, or scissors:");
-    const computerSelection = getComputerChoice();
-    const roundResult = playRound(playerSelection, computerSelection);
+function displayResult(resultText) {
+  const resultElement = document.getElementById("results");
+  resultElement.textContent = resultText;
+}
 
-    console.log("Player: " + playerSelection);
-    console.log("Computer: " + computerSelection);
-
-    if (roundResult === "win") {
-      playerScore++;
-      console.log("You win this round!");
-    } else if (roundResult === "lose") {
-      computerScore++;
-      console.log("You lose this round!");
-    } else {
-      console.log("It's a tie this round!");
-    }
-
-    console.log("-----------------------");
-  }
-
-  console.log("Final Score:");
-  console.log("Player: " + playerScore);
-  console.log("Computer: " + computerScore);
-
-  if (playerScore > computerScore) {
-    console.log("You win the game!");
-  } else if (playerScore < computerScore) {
-    console.log("You lose the game!");
-  } else {
-    console.log("It's a tie game!");
+function checkWinner() {
+  if (playerScore === 5) {
+    displayResult("Congratulations! You win the game!");
+    disableButtons();
+  } else if (computerScore === 5) {
+    displayResult("Sorry, you lose the game!");
+    disableButtons();
   }
 }
 
-game();
+function disableButtons() {
+  const buttons = document.querySelectorAll("button");
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+}
+
+function game(playerSelection) {
+  const computerSelection = getComputerChoice();
+  const roundResult = playRound(playerSelection, computerSelection);
+
+  if (roundResult === "win") {
+    playerScore++;
+    displayResult(`You win this round! ${playerSelection} beats ${computerSelection}`);
+  } else if (roundResult === "lose") {
+    computerScore++;
+    displayResult(`You lose this round! ${computerSelection} beats ${playerSelection}`);
+  } else {
+    displayResult(`It's a tie this round! Both chose ${playerSelection}`);
+  }
+
+  updateScore();
+  checkWinner();
+}
+
+const buttons = document.querySelectorAll("button");
+buttons.forEach(button => {
+  button.addEventListener("click", () => {
+    game(button.id);
+  });
+});
